@@ -1,0 +1,21 @@
+server.port: 8080
+
+spring:
+  kafka:
+    bootstrap-servers: 192.168.25.129:9092
+    topic: main-topic
+    dead_letter_topic: retry-topic
+
+    # producer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+    # consumer
+    consumer:
+      group-id: kafka-main
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
