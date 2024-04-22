@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.messaging.Message;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 @Slf4j
@@ -58,7 +60,16 @@ public class KafkaPublisher {
                     .setHeader("LINH", "LINH TEST")
                     .setHeader(KafkaHeaders.TOPIC, messageTopic)
                     .build();
-            kafkaTemplate.send(message);
+
+            CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(message);
+            // Success case
+           future.whenComplete((rs, ex) -> {
+               if (ex != null){
+                   ex.printStackTrace();
+               }else{
+                   System.out.println("okokokokokok rs ------> "+rs);
+               }
+           });
         }catch (Exception e){
             e.printStackTrace();
         }
