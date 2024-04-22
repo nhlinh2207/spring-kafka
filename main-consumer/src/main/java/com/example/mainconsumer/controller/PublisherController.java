@@ -24,6 +24,12 @@ public class PublisherController {
         publisher.publish(dto);
     }
 
+    @PostMapping(value = "/publish-message")
+    public void publishMessage(@RequestBody @Valid MyDto dto) {
+        log.info("Publishing the event {}", dto);
+        publisher.publishMessage(dto);
+    }
+
     @GetMapping(value = "/hello")
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("okokoko");

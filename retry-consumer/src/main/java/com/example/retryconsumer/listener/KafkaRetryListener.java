@@ -23,6 +23,10 @@ public class KafkaRetryListener {
         log.info("Started consuming message on topic: {}, offset {}, message {}", consumerRecord.topic(),
                 consumerRecord.offset(), consumerRecord.value());
 
+        consumerRecord.headers().forEach(
+                i -> System.out.println(i.key())
+        );
+
         if (consumerRecord.offset() % 2 != 0) throw new IllegalStateException("This is something odd.");
 
         try {

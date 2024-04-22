@@ -4,6 +4,7 @@ spring:
   kafka:
     bootstrap-servers: 192.168.25.129:9092
     topic: main-topic
+    message_topic: message-topic
     dead_letter_topic: retry-topic
 
     # producer

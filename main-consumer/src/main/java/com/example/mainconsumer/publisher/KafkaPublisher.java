@@ -6,8 +6,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.Message;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -20,6 +23,9 @@ public class KafkaPublisher {
 
     @Value(value = "${spring.kafka.topic}")
     private String topic;
+
+    @Value(value = "${spring.kafka.message_topic}")
+    private String messageTopic;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,6 +45,21 @@ public class KafkaPublisher {
             kafkaTemplate.send(producerRecord);
             log.info("Message sent {}", dto);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void publishMessage(MyDto dto){
+        try{
+            String payload = objectMapper.writeValueAsString(dto);
+            Message<String> message = MessageBuilder
+                    .withPayload(payload)
+                    .setHeader(KafkaHeaders.KEY, dto.getEventType().getEvent())
+                    .setHeader("LINH", "LINH TEST")
+                    .setHeader(KafkaHeaders.TOPIC, messageTopic)
+                    .build();
+            kafkaTemplate.send(message);
+        }catch (Exception e){
             e.printStackTrace();
         }
     }

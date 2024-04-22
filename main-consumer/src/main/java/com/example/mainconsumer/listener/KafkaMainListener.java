@@ -4,6 +4,10 @@ import com.example.mainconsumer.dto.MyDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,5 +27,17 @@ public class KafkaMainListener {
 
         log.info("Finished consuming message on topic: {}, offset {}, message {}", consumerRecord.topic(),
                 consumerRecord.offset(), consumerRecord.value());
+    }
+
+    @KafkaListener(
+            topics = "${spring.kafka.message_topic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            containerFactory = "kafkaListenerContainerFactory")
+    public void listenMessage(@Headers MessageHeaders headers, String message) {
+        String header1 = (String)headers.get("LINH");
+        String header2= (String)headers.get(KafkaHeaders.RECEIVED_KEY);
+        System.out.println("Header1 : " + header1);
+        System.out.println("Header2 : " + header2);
+        System.out.println("Message: "+message);
     }
 }
